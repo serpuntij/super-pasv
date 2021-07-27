@@ -2,12 +2,12 @@ import{expect} from 'chai';
 import supertest from 'supertest';
 
 describe('auth', function(){
-    const request = supertest('http://localhost:3000');
+    const request = supertest(process.env.BASE_URL);
 
     it('successful auth', function(){
         request
             .post('/auth')
-            .send({login: 'admin', password: 'admin'})
+            .send({login: process.env.LOGIN, password: process.env.PASSWORD})
             .end(function(err, res){
                 expect(res.statusCode).to.eq(200);
                 expect(res.body.token).not.to.be.undefined;
