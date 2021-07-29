@@ -1,29 +1,41 @@
-import{expect} from 'chai';
+import {expect} from 'chai';
 import supertest from 'supertest';
 
-describe('auth', function(){
-    const request = supertest(process.env.BASE_URL);
+describe('auth', function () {
+    let result;
 
-    it('successful auth', function(){
-        request
-            .post('/auth')
-            .send({login: process.env.LOGIN, password: process.env.PASSWORD})
-            .end(function(err, res){
-                expect(res.statusCode).to.eq(200);
+    describe('successful auth', function () {
+        before(function () {
+            result = supertest(process.env.BASE_URL)
+                .post('/auth')
+                .send({login: process.env.LOGIN, password: process.env.PASSWORD});
+        });
+
+        it('response status code is 200', function () {
+            result.expect(200);
+        });
+
+        it('response body contains authorization token', function () {
+            result.end(function (err, res) {
                 expect(res.body.token).not.to.be.undefined;
-
             });
-    })
+        });
+    });
 
-    it('Log in with wrong should return err', function(){
-        request
-            .post('/auth')
-            .send({login: 'wrong', password: 'wrong'})
-            .end(function(err, res){
-                expect(res.statusCode).to.eq(404)
+    describe('Log in with wrong should return err', function () {
+        before(function () {
+            result = supertest(process.env.BASE_URL)
+                .post('/auth')
+                .send({login: 'wrong', password: 'wrong'});
+        });
+
+        it('response status code is 404', function () {
+            result.expect(404)
+        });
+        it('response body contains error message', function () {
+            result.end(function (err, res) {
                 expect(res.body.message).to.eq('Wrong login or password.');
-
-            })
-    })
-
+            });
+        });
+    });
 });
